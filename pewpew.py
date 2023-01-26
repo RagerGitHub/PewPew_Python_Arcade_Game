@@ -10,6 +10,8 @@ __author__ = 'Tyler Slomianyj'
 import random
 import arcade
 
+# constants
+
 SPRITE_SCALING = 0.75
 SPRITE_SCALING_LASER = 1.25
 SPRITE_SCALING_ENEMY = 0.2
@@ -25,9 +27,7 @@ BULLET_COOLDOWN_TICKS = 8
 class Enemy(arcade.Sprite):
 
     def update(self):
-        """ Move the slime """
-        # Move player.
-        # Remove these lines if physics engine is moving player.
+        # Move enemies.
         self.center_x += self.change_x
         self.center_y += self.change_y
 
@@ -52,17 +52,9 @@ class Player(arcade.Sprite):
 
     def update(self):
 
-        """ Move the player """
-
         # Move player.
-
-        # Remove these lines if physics engine is moving player.
-
         self.center_x += self.change_x
-
         self.center_y += self.change_y
-
-
 
         # Check for out-of-bounds
 
@@ -75,9 +67,6 @@ class Player(arcade.Sprite):
 
             self.right = SCREEN_WIDTH
             self.change_x = -self.change_x
-
-
-
 
         if self.bottom < 0:
 
@@ -129,6 +118,7 @@ class MyGame(arcade.Window):
         # Score
         self.score = 0
 
+        # timer
         self.total_time = 0.0
 
         # Set up the player
@@ -168,7 +158,7 @@ class MyGame(arcade.Window):
         self.bullet_list.draw()
 
 
-        # Draw text
+        # Draw level and timer
         arcade.draw_text(f"Level: {self.level}", 10, 20, arcade.color.WHITE, 14)
         minutes = int(30-self.total_time) // 60
 
@@ -254,7 +244,6 @@ class MyGame(arcade.Window):
 
         # Loop through each bullet
         for bullet in self.bullet_list:
-            #bullet.update()
 
             # Check this bullet to see if it hit a coin
             hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
@@ -266,7 +255,7 @@ class MyGame(arcade.Window):
             # For every coin we hit, add to the score and remove the coin
             for enemy in hit_list:
                 enemy.remove_from_sprite_lists()
-
+        #quitting if player touches enemy
         for enemy in self.enemy_list:
             player_death = arcade.check_for_collision_with_list(enemy, self.player_list)
             if len(player_death) > 0:
@@ -289,12 +278,12 @@ class MyGame(arcade.Window):
                 # If the bullet flies off-screen, remove it.
                 if bullet.bottom > SCREEN_HEIGHT:
                     bullet.remove_from_sprite_lists()
-
+        # if the timer runs out, quit
         if 30 - self.total_time < 0:
             quit()
 
 
-
+        # part of bullet cooldown
         self.bullet_cooldown += 1
 
 
